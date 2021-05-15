@@ -10,7 +10,6 @@ namespace ProjectOwl.Functions
     {
         public AudioFunctions()
         {
-
         }
 
         [FunctionName("AddAudioFunction")]
@@ -34,7 +33,7 @@ namespace ProjectOwl.Functions
 
         [FunctionName("GetAllAudiosFunction")]
         public async Task<IActionResult> GetAllAudios(
-            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "audio/index")] HttpRequest req)
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "audio/{pn}/{ps}")] HttpRequest req, string pn, string ps)
         {
             return new OkResult();
         }

@@ -3,6 +3,11 @@
     public class AudioModel
     {
         /// <summary>
+        /// Audio file name
+        /// </summary>
+        public string FileName { get; set; }
+
+        /// <summary>
         /// Related Issue
         /// </summary>
         public Issue Issue { get; set; }
@@ -11,11 +16,6 @@
         /// Priority based on Sentiment
         /// </summary>
         public Priority Priority { get; set; }
-
-        /// <summary>
-        /// Audio duration 
-        /// </summary>
-        public string Duration { get; set; }
 
         /// <summary>
         /// Audio recording via cdn

@@ -8,6 +8,7 @@ using System;
 using ProjectOwl.Models;
 using ProjectOwl.Interfaces;
 using Newtonsoft.Json;
+using ProjectOwl.Services;
 
 namespace ProjectOwl.Functions
 {
@@ -20,6 +21,13 @@ namespace ProjectOwl.Functions
             _audioService = audioService; 
         }
 
+        /// <summary>
+        /// Add Audio Function
+        /// Add audio to blob and create record
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="outputQueueItem"></param>
+        /// <returns></returns>
         [FunctionName("AddAudioFunction")]
         public async Task<IActionResult> AddAudio(
             [HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "audio")] HttpRequest req,
@@ -43,23 +51,53 @@ namespace ProjectOwl.Functions
             return new OkResult(); 
         }
 
+        /// <summary>
+        /// Process Audio Function
+        /// Process audio content using AI
+        /// </summary>
+        /// <param name="msg"></param>
+        /// <returns></returns>
         [FunctionName("ProcessAudioFunction")]
-        public async Task ProcessAudio([QueueTrigger("audio", Connection = "AzureWebJobsStorage")] string myQueueItem)
+        public async Task ProcessAudio([QueueTrigger(Queue.Audio, Connection = "AzureWebJobsStorage")] string msg)
         {
+            if (!string.IsNullOrEmpty(msg) || !string.IsNullOrWhiteSpace(msg))
+                await _audioService.ProcessAudioAsync(msg);
         }
 
+        /// <summary>
+        /// Get Audio Function
+        /// Get audio record from database
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [FunctionName("GetAudioFunction")]
         public async Task<IActionResult> GetAudio(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "audio/{id}")] HttpRequest req, string id)
         {
-            return new OkResult();
+            if (string.IsNullOrEmpty(id) || string.IsNullOrWhiteSpace(id))
+                return new BadRequestResult();
+
+            return new OkObjectResult(await _audioService.GetAudioAsync(id));
         }
 
+        /// <summary>
+        /// Get All Audios Function
+        /// Get audio records from database
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
         [FunctionName("GetAllAudiosFunction")]
         public async Task<IActionResult> GetAllAudios(
             [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "audio")] HttpRequest req)
         {
-            return new OkResult();
+            var pageNumber = req.GetQuery("pageNumber");
+            var pageSize = req.GetQuery("pageSize");
+
+            if (!int.TryParse(pageNumber, out var pn) || !int.TryParse(pageSize, out var ps))
+                return new BadRequestResult();
+
+            return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps));
         }
     }
 }

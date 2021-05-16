@@ -111,6 +111,7 @@ namespace ProjectOwl.Services
             var entries = await _dbContext.Audios
               .Skip((filter.PageNumber - 1) * filter.PageSize)
               .Take(filter.PageSize)
+              .OrderBy(x => x.Created)
               .ToListAsync();
 
             var totalRecords = await _dbContext.Audios.CountAsync();

@@ -78,7 +78,12 @@ namespace ProjectOwl.Functions
             if (string.IsNullOrEmpty(id) || string.IsNullOrWhiteSpace(id))
                 return new BadRequestResult();
 
-            return new OkObjectResult(await _audioService.GetAudioAsync(id));
+            var response = await _audioService.GetAudioAsync(id);
+
+            if (response == null)
+                return new BadRequestResult(); 
+
+            return new OkObjectResult(response);
         }
 
         /// <summary>

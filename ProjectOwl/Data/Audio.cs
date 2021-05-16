@@ -41,11 +41,6 @@ namespace ProjectOwl.Data
         public DateTime Created { get; set; }
 
         /// <summary>
-        /// Audio duration 
-        /// </summary>
-        public string Duration { get; set; }
-
-        /// <summary>
         /// Status of audio audit
         /// </summary>
         public AuditStatus Status { get; set; }

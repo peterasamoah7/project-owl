@@ -7,7 +7,8 @@
         BalanceTransfer,
         MissingCard,
         General,
-        Maintenance
+        Maintenance,
+        Uncategorized
     }
 
     public enum Priority

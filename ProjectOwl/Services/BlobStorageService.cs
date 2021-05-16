@@ -15,7 +15,6 @@ namespace ProjectOwl.Services
         public BlobStorageService()
         {
             string storageConnectionString = Environment.GetEnvironmentVariable("AzureWebJobsStorage");
-
             _storageAccount = CloudStorageAccount.TryParse(storageConnectionString, out var storageAccount) ? 
                 storageAccount : throw new ArgumentNullException();
         }
@@ -61,7 +60,6 @@ namespace ProjectOwl.Services
             var blobClient = _storageAccount.CreateCloudBlobClient();
             var container = blobClient.GetContainerReference(containerName);
             await container.CreateIfNotExistsAsync();
-
             return container; 
         }
     }

@@ -26,6 +26,11 @@ namespace ProjectOwl.Data
         public decimal Sentiment { get; set; }
 
         /// <summary>
+        /// Stored as a Json List 
+        /// </summary>
+        public string Taxonomy { get; set; }
+
+        /// <summary>
         /// Related Issue
         /// </summary>
         public Issue Issue { get; set; }

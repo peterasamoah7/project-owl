@@ -16,11 +16,19 @@ namespace ProjectOwl.Services
     {
         private readonly ApplicationDbContext _dbContext;
         private readonly IBlobStorageService _blobStorageService;
+        private readonly ITextAnalyticsService _textAnalyticsService;
+        private readonly ITokenService _tokenService;
 
-        public AudioService(ApplicationDbContext dbContext, IBlobStorageService blobStorageService)
+        public AudioService(
+            ApplicationDbContext dbContext, 
+            IBlobStorageService blobStorageService, 
+            ITextAnalyticsService textAnalyticsService,
+            ITokenService tokenService)
         {
             _dbContext = dbContext;
             _blobStorageService = blobStorageService;
+            _textAnalyticsService = textAnalyticsService;
+            _tokenService = tokenService; 
         }
 
         /// <summary>
@@ -61,12 +69,27 @@ namespace ProjectOwl.Services
 
             ///get blob 
             /// process file for text
-            /// get sentiment of text
 
+            string text = "";
+
+            /// get auth token
+            var token = await _tokenService.GetAuthTokenAsync();
+
+            /// get overall sentiment
+            var sentiment = await _textAnalyticsService.GetSentiment(text, token);
+            
+            /// related emotional taxonomies
+            var taxonomy = await _textAnalyticsService.GetTaxonomy(text, token);
+            string taxonomyStr = string
+                .Join(", ", taxonomy.Data.Categories
+                .Select(x => x.Label)).TrimEnd(',', ' '); ;          
+
+            ///update audio entry with details from above
             var audio = await _dbContext.Audios
                 .FirstOrDefaultAsync(a => a.FileName == msg.FileName);
 
-            ///update audio entry with details from above
+            audio.Sentiment = sentiment.Data.Sentiment.Overall;
+            audio.Taxonomy = taxonomyStr; 
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync();
@@ -95,7 +118,8 @@ namespace ProjectOwl.Services
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
                 Recording = $"{cdn}/{audio.FileName}{sasToken}",
                 Transcript = audio.Transcript,
-                Created = audio.Created.ToString("dddd, dd MMMM yyyy")
+                Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
+                Taxonomy = audio.Taxonomy?.Split(',')
             };
         }
 
@@ -105,7 +129,7 @@ namespace ProjectOwl.Services
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<PagedResult<List<AudioModel>>> GetPagedAudiosAsync(int pageNumber, int pageSize)
+        public async Task<PagedResult<List<AudioModel>>> GetPagedAudiosAsync(int pageNumber, int pageSize, Issue? issue = null)
         {
             var filter = new PaginationFilter(pageNumber, pageSize);
             var entries = await _dbContext.Audios
@@ -113,6 +137,9 @@ namespace ProjectOwl.Services
               .Take(filter.PageSize)
               .OrderBy(x => x.Created)
               .ToListAsync();
+
+            if (issue.HasValue)
+                entries = entries.Where(x => x.Issue == issue).ToList(); 
 
             var totalRecords = await _dbContext.Audios.CountAsync();
 
@@ -126,7 +153,8 @@ namespace ProjectOwl.Services
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
                 Recording = $"{cdn}/{audio.FileName}{sasToken}",
                 Transcript = audio.Transcript,
-                Created = audio.Created.ToString("dddd, dd MMMM yyyy")
+                Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
+                Taxonomy = audio.Taxonomy?.Split(',')
             })
             .ToList();
 

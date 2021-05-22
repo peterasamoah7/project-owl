@@ -98,11 +98,19 @@ namespace ProjectOwl.Functions
         {
             var pageNumber = req.GetQuery("pageNumber");
             var pageSize = req.GetQuery("pageSize");
+            var issue = req.GetQuery("issue");
+
+            Issue? iss = null; 
+            if (!string.IsNullOrEmpty(issue))
+            {
+                if (!Enum.TryParse<Issue>(issue, true, out var value))
+                    iss = value; 
+            }         
 
             if (!int.TryParse(pageNumber, out var pn) || !int.TryParse(pageSize, out var ps))
                 return new BadRequestResult();
 
-            return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps));
+            return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps, iss));
         }
     }
 }

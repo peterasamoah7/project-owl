@@ -34,7 +34,7 @@ namespace ProjectOwl.Services
         /// <returns></returns>
         public static string GetQuery(this HttpRequest req, string key)
         {
-            return req.Query.TryGetValue(key, out var value) ? value.ToString() : string.Empty;
+            return req.Query.TryGetValue(key, out var value) ? value.ToString() : null;
         }
     }
 }

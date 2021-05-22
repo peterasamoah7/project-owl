@@ -14,13 +14,16 @@ namespace ProjectOwl
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddDbContext<ApplicationDbContext>(d => d.UseInMemoryDatabase("AudioDb"));
+            builder.Services.AddDbContext<ApplicationDbContext>
+                (d => d.UseInMemoryDatabase("AudioDb"));
 
             builder.Services
                 .AddScoped<IBlobStorageService, BlobStorageService>()
                 .AddScoped<IAudioService, AudioService>()
-                .AddScoped<ISpeechService, SpeechService>()
-                .AddScoped<ITextAnalyticsService, TextAnalyticsService>();
+                .AddScoped<ISpeechService, SpeechService>();
+
+            builder.Services.AddHttpClient<ITokenService, TokenService>();
+            builder.Services.AddHttpClient<ITextAnalyticsService, TextAnalyticsService>();
 
             builder.Services.AddControllers().AddNewtonsoftJson(options =>
             {

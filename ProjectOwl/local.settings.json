@@ -3,7 +3,13 @@
   "Values": {
     "AzureWebJobsStorage": "UseDevelopmentStorage=true",
     "FUNCTIONS_WORKER_RUNTIME": "dotnet",
-    "CdnEndpoint":  ""
+    "CdnEndpoint": "Add cdn endpoint here",
+    "AuthUrl": "Add expert ai authentication url",
+    "AccountId": "Add authentication account id",
+    "AccountPassword": "Add authentication account password",
+    "NlpApiUrl": "Add expert ai NLP API url",
+    "AzureSpeechServiceKey": "Add Azure Speech Service Key",
+    "AzureSpeechServiceRegion": "Add Azure Speech Service Region"
   },
   "Host": {
     "LocalHttpPort": 7071,

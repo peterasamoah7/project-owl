@@ -4,6 +4,7 @@ using Microsoft.WindowsAzure.Storage.Blob;
 using ProjectOwl.Interfaces;
 using System;
 using System.IO;
+using System.IO.Pipelines;
 using System.Threading.Tasks;
 
 namespace ProjectOwl.Services
@@ -33,6 +34,28 @@ namespace ProjectOwl.Services
             using var fileStream = file.OpenReadStream();
             await blob.UploadFromStreamAsync(fileStream);
             fileStream.Close(); 
+        }
+
+        /// <summary>
+        /// Get blob file as stream
+        /// </summary>
+        /// <param name="containerName"></param>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task<Stream> GetFileAsync(string containerName, string fileName)
+        {
+            var container = await GetBlobContainerAsync(containerName);
+            var blob = container.GetBlockBlobReference(fileName);
+
+            Stream stream = null;
+            using (var ms = new MemoryStream())
+            {
+                await blob.DownloadToStreamAsync(ms);
+                ms.Position = 0;
+                await ms.CopyToAsync(stream, (int)SeekOrigin.Begin);
+            }
+
+            return stream; 
         }
 
         /// <summary>

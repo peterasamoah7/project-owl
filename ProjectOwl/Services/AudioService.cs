@@ -18,17 +18,20 @@ namespace ProjectOwl.Services
         private readonly IBlobStorageService _blobStorageService;
         private readonly ITextAnalyticsService _textAnalyticsService;
         private readonly ITokenService _tokenService;
+        private readonly ISpeechService _speechService; 
 
         public AudioService(
             ApplicationDbContext dbContext, 
             IBlobStorageService blobStorageService, 
             ITextAnalyticsService textAnalyticsService,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            ISpeechService speechService)
         {
             _dbContext = dbContext;
             _blobStorageService = blobStorageService;
             _textAnalyticsService = textAnalyticsService;
-            _tokenService = tokenService; 
+            _tokenService = tokenService;
+            _speechService = speechService;
         }
 
         /// <summary>
@@ -39,14 +42,15 @@ namespace ProjectOwl.Services
         /// <returns></returns>
         public async Task<string> AddAudioAsync(IFormFile file, Issue issue)
         {
-            var fileName = $"{Guid.NewGuid()}{Path.GetExtension(file.FileName)}";
+            var ext = Path.GetExtension(file.FileName); 
+            var fileName = $"{Guid.NewGuid()}{ext}";
 
             await _blobStorageService.UploadFileAsync(Container.Audio, file, fileName);
 
             var audio = new Audio
             {
                 FileName = fileName,
-                FileExtension = Path.GetExtension(file.FileName),
+                FileExtension = ext,
                 Issue = issue,
                 Created = DateTime.Now,
                 Status = AuditStatus.Pending
@@ -68,9 +72,11 @@ namespace ProjectOwl.Services
             var msg = JsonConvert.DeserializeObject<ProcessAudioMessage>(message);
 
             ///get blob 
-            /// process file for text
+            var blob = await _blobStorageService.GetFileAsync(Container.Audio, msg.FileName);
 
-            string text = "";
+            /// process file for text
+            var content = await _speechService.ProcessAudio(blob); 
+            string text = string.Join("\n", content);
 
             /// get auth token
             var token = await _tokenService.GetAuthTokenAsync();
@@ -89,7 +95,8 @@ namespace ProjectOwl.Services
                 .FirstOrDefaultAsync(a => a.FileName == msg.FileName);
 
             audio.Sentiment = sentiment.Data.Sentiment.Overall;
-            audio.Taxonomy = taxonomyStr; 
+            audio.Taxonomy = taxonomyStr;
+            audio.Transcript = text; 
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync();

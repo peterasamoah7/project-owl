@@ -8,6 +8,6 @@ namespace ProjectOwl.Interfaces
 {
     public interface ISpeechService
     {
-        Task<List<string>> ProcessAudio(Stream stream);
+        Task<string> ExtractText(Stream stream);
     }
 }

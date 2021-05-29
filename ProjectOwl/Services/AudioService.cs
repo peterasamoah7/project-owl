@@ -74,9 +74,7 @@ namespace ProjectOwl.Services
             ///get blob 
             var blob = await _blobStorageService.GetFileAsync(Container.Audio, msg.FileName);
 
-            /// process file for text
-            var content = await _speechService.ProcessAudio(blob); 
-            string text = string.Join("\n", content);
+            var text = await _speechService.ExtractText(await blob.OpenReadAsync());
 
             /// get auth token
             var token = await _tokenService.GetAuthTokenAsync();
@@ -88,7 +86,7 @@ namespace ProjectOwl.Services
             var taxonomy = await _textAnalyticsService.GetTaxonomy(text, token);
             string taxonomyStr = string
                 .Join(", ", taxonomy.Data.Categories
-                .Select(x => x.Label)).TrimEnd(',', ' '); ;          
+                .Select(x => x.Label)).TrimEnd(',', ' ');      
 
             ///update audio entry with details from above
             var audio = await _dbContext.Audios

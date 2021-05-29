@@ -31,6 +31,7 @@ namespace ProjectOwl.Services
         {
             var container = await GetBlobContainerAsync(containerName);
             var blob = container.GetBlockBlobReference(fileName);
+            blob.Properties.ContentType = file.ContentType; 
             using var fileStream = file.OpenReadStream();
             await blob.UploadFromStreamAsync(fileStream);
             fileStream.Close(); 
@@ -42,20 +43,12 @@ namespace ProjectOwl.Services
         /// <param name="containerName"></param>
         /// <param name="fileName"></param>
         /// <returns></returns>
-        public async Task<Stream> GetFileAsync(string containerName, string fileName)
+        public async Task<CloudBlockBlob> GetFileAsync(string containerName, string fileName)
         {
             var container = await GetBlobContainerAsync(containerName);
             var blob = container.GetBlockBlobReference(fileName);
 
-            Stream stream = null;
-            using (var ms = new MemoryStream())
-            {
-                await blob.DownloadToStreamAsync(ms);
-                ms.Position = 0;
-                await ms.CopyToAsync(stream, (int)SeekOrigin.Begin);
-            }
-
-            return stream; 
+            return blob; 
         }
 
         /// <summary>

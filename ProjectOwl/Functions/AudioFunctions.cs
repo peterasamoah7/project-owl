@@ -122,18 +122,26 @@ namespace ProjectOwl.Functions
             var pageNumber = req.GetQuery("pageNumber");
             var pageSize = req.GetQuery("pageSize");
             var issue = req.GetQuery("issue");
+            var status = req.GetQuery("status");
 
-            Issue? iss = null; 
+            Issue? iss = null;
+            AuditStatus? auditStatus = null; 
             if (!string.IsNullOrEmpty(issue))
             {
                 if (!Enum.TryParse<Issue>(issue, true, out var value))
                     iss = value; 
-            }         
+            }    
+            
+            if(!string.IsNullOrEmpty(status))
+            {
+                if (!Enum.TryParse<AuditStatus>(status, true, out var value)) 
+                    auditStatus = value;
+            }
 
             if (!int.TryParse(pageNumber, out var pn) || !int.TryParse(pageSize, out var ps))
                 return new BadRequestResult();
 
-            return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps, iss));
+            return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps, iss, auditStatus));
         }
     }
 }

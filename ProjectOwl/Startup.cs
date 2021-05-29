@@ -6,6 +6,7 @@ using Newtonsoft.Json.Converters;
 using ProjectOwl.Data;
 using ProjectOwl.Interfaces;
 using ProjectOwl.Services;
+using System;
 
 [assembly: FunctionsStartup(typeof(ProjectOwl.Startup))]
 namespace ProjectOwl
@@ -14,9 +15,12 @@ namespace ProjectOwl
     {
         public override void Configure(IFunctionsHostBuilder builder)
         {
-            builder.Services.AddDbContext<ApplicationDbContext>
-                (d => d.UseInMemoryDatabase("AudioDb"));
-
+            if(!string.Equals(Environment.GetEnvironmentVariable("Env"), "Local"))
+                builder.Services.AddDbContext<ApplicationDbContext>(d => 
+                    d.UseSqlServer(Environment.GetEnvironmentVariable("DatabaseConnectionString")));
+            else
+                builder.Services.AddDbContext<ApplicationDbContext>(d => d.UseInMemoryDatabase("AudioDb"));
+            
             builder.Services
                 .AddScoped<IBlobStorageService, BlobStorageService>()
                 .AddScoped<IAudioService, AudioService>()

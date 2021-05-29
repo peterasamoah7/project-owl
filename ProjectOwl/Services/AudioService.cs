@@ -137,7 +137,8 @@ namespace ProjectOwl.Services
         /// <param name="pageNumber"></param>
         /// <param name="pageSize"></param>
         /// <returns></returns>
-        public async Task<PagedResult<List<AudioModel>>> GetPagedAudiosAsync(int pageNumber, int pageSize, Issue? issue = null)
+        public async Task<PagedResult<List<AudioModel>>> GetPagedAudiosAsync(
+            int pageNumber, int pageSize, Issue? issue = null, AuditStatus? status = null)
         {
             var filter = new PaginationFilter(pageNumber, pageSize);
             var entries = await _dbContext.Audios
@@ -147,7 +148,10 @@ namespace ProjectOwl.Services
               .ToListAsync();
 
             if (issue.HasValue)
-                entries = entries.Where(x => x.Issue == issue).ToList(); 
+                entries = entries.Where(x => x.Issue == issue.Value).ToList();
+
+            if (status.HasValue)
+                entries = entries.Where(x => x.Status == status.Value).ToList();
 
             var totalRecords = await _dbContext.Audios.CountAsync();
 

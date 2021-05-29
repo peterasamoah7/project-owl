@@ -10,10 +10,11 @@
     "NlpApiUrl": "Add expert ai NLP API url",
     "AzureSpeechServiceKey": "Add Azure Speech Service Key",
     "AzureSpeechServiceRegion": "Add Azure Speech Service Region",
-    "AzureSignalRConnectionString": "Add SignalR Service Connection String"
+    "DatabaseConnectionString": "Add SQL Connection string",
+    "AzureSignalRConnectionString": "Add SignalR Service Connection String",
+    "Env": "Local" //Local or Prod
   },
   "Host": {
     "LocalHttpPort": 7071,
     "CORS": "*"
   }
-}

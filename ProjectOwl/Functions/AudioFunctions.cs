@@ -73,19 +73,18 @@ namespace ProjectOwl.Functions
         /// <param name="msg"></param>
         /// <returns></returns>
         [FunctionName("ProcessAudioFunction")]
-        public Task ProcessAudio([QueueTrigger(Queue.Audio, Connection = "AzureWebJobsStorage")] string msg,
+        public async Task ProcessAudio([QueueTrigger(Queue.Audio, Connection = "AzureWebJobsStorage")] string msg,
             [SignalR(HubName = "notify")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             if (!string.IsNullOrEmpty(msg) || !string.IsNullOrWhiteSpace(msg))
             {
-                _audioService.ProcessAudioAsync(msg);
-            }
-
-            return signalRMessages.AddAsync(new SignalRMessage
-            {
-                Target = "notify",
-                Arguments = new[] { new NotifyModel { State = State.Done } }
-            });
+                await _audioService.ProcessAudioAsync(msg);
+                await signalRMessages.AddAsync(new SignalRMessage
+                {
+                    Target = "notify",
+                    Arguments = new[] { new NotifyModel { State = State.Done } }
+                });
+            }            
         }
 
         /// <summary>

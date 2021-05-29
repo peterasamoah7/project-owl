@@ -9,6 +9,7 @@ using ProjectOwl.Models;
 using ProjectOwl.Interfaces;
 using Newtonsoft.Json;
 using ProjectOwl.Services;
+using Microsoft.Azure.WebJobs.Extensions.SignalRService;
 
 namespace ProjectOwl.Functions
 {
@@ -52,16 +53,39 @@ namespace ProjectOwl.Functions
         }
 
         /// <summary>
+        /// SignalR Connector
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="connectionInfo"></param>
+        /// <returns></returns>
+        [FunctionName("negotiate")]
+        public static SignalRConnectionInfo GetSignalRInfo(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "post")] HttpRequest req,
+            [SignalRConnectionInfo(HubName = "notify")] SignalRConnectionInfo connectionInfo)
+        {
+            return connectionInfo;
+        }
+
+        /// <summary>
         /// Process Audio Function
         /// Process audio content using AI
         /// </summary>
         /// <param name="msg"></param>
         /// <returns></returns>
         [FunctionName("ProcessAudioFunction")]
-        public async Task ProcessAudio([QueueTrigger(Queue.Audio, Connection = "AzureWebJobsStorage")] string msg)
+        public async Task ProcessAudio([QueueTrigger(Queue.Audio, Connection = "AzureWebJobsStorage")] string msg,
+            [SignalR(HubName = "notify")] IAsyncCollector<SignalRMessage> signalRMessages)
         {
             if (!string.IsNullOrEmpty(msg) || !string.IsNullOrWhiteSpace(msg))
+            {
                 await _audioService.ProcessAudioAsync(msg);
+
+                await signalRMessages.AddAsync(new SignalRMessage
+                {
+                    Target = "notify",
+                    Arguments = new[] { new NotifyModel { State = State.Done } }
+                });
+            }                
         }
 
         /// <summary>

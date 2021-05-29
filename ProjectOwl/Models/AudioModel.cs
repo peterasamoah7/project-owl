@@ -36,5 +36,10 @@
         /// Related Taxanomy based on classification
         /// </summary>
         public string[] Taxonomy { get; set; }
+
+        /// <summary>
+        /// Audit Status
+        /// </summary>
+        public AuditStatus Status { get; set; }
     }
 }

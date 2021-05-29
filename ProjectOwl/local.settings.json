@@ -9,7 +9,8 @@
     "AccountPassword": "Add authentication account password",
     "NlpApiUrl": "Add expert ai NLP API url",
     "AzureSpeechServiceKey": "Add Azure Speech Service Key",
-    "AzureSpeechServiceRegion": "Add Azure Speech Service Region"
+    "AzureSpeechServiceRegion": "Add Azure Speech Service Region",
+    "AzureSignalRConnectionString": "Add SignalR Service Connection String"
   },
   "Host": {
     "LocalHttpPort": 7071,

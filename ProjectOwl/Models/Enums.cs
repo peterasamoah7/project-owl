@@ -21,8 +21,12 @@
     public enum AuditStatus
     {
         Pending = 1,
-        Ongoing,
         Done
     }
 
+    public enum State
+    {
+        Done,
+        Error
+    }
 }

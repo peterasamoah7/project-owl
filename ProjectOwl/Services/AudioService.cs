@@ -74,6 +74,7 @@ namespace ProjectOwl.Services
             ///get blob 
             var blob = await _blobStorageService.GetFileAsync(Container.Audio, msg.FileName);
 
+            ///extract text from audio file
             var text = await _speechService.ExtractText(await blob.OpenReadAsync());
 
             /// get auth token
@@ -94,7 +95,8 @@ namespace ProjectOwl.Services
 
             audio.Sentiment = sentiment.Data.Sentiment.Overall;
             audio.Taxonomy = taxonomyStr;
-            audio.Transcript = text; 
+            audio.Transcript = text;
+            audio.Status = AuditStatus.Done;
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync();
@@ -124,7 +126,8 @@ namespace ProjectOwl.Services
                 Recording = $"{cdn}/{audio.FileName}{sasToken}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
-                Taxonomy = audio.Taxonomy?.Split(',')
+                Taxonomy = audio.Taxonomy?.Split(','),
+                Status = audio.Status
             };
         }
 
@@ -159,7 +162,8 @@ namespace ProjectOwl.Services
                 Recording = $"{cdn}/{audio.FileName}{sasToken}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
-                Taxonomy = audio.Taxonomy?.Split(',')
+                Taxonomy = audio.Taxonomy?.Split(','),
+                Status = audio.Status
             })
             .ToList();
 

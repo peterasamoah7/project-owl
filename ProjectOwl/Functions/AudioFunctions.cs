@@ -143,5 +143,17 @@ namespace ProjectOwl.Functions
 
             return new OkObjectResult(await _audioService.GetPagedAudiosAsync(pn, ps, iss, auditStatus));
         }
+
+        /// <summary>
+        /// Add health check endpoint
+        /// </summary>
+        /// <param name="req"></param>
+        /// <returns></returns>
+        [FunctionName("AudioFunctionHealthCheck")]
+        public static IActionResult Health(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "health")] HttpRequest req)
+        {
+            return new OkObjectResult("OK"); 
+        }
     }
 }

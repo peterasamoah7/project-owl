@@ -67,7 +67,7 @@ namespace ProjectOwl.Services
         /// </summary>
         /// <param name="message"></param>
         /// <returns></returns>
-        public async Task ProcessAudioAsync(string message)
+        public async Task<string> ProcessAudioAsync(string message)
         {
             var msg = JsonConvert.DeserializeObject<ProcessAudioMessage>(message);
 
@@ -100,6 +100,8 @@ namespace ProjectOwl.Services
 
             _dbContext.Audios.Update(audio);
             await _dbContext.SaveChangesAsync();
+
+            return audio.FileName; 
         }
 
         /// <summary>

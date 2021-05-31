@@ -78,11 +78,15 @@ namespace ProjectOwl.Functions
         {
             if (!string.IsNullOrEmpty(msg) || !string.IsNullOrWhiteSpace(msg))
             {
-                await _audioService.ProcessAudioAsync(msg);
+                var filename = await _audioService.ProcessAudioAsync(msg);
                 await signalRMessages.AddAsync(new SignalRMessage
                 {
                     Target = "notify",
-                    Arguments = new[] { new NotifyModel { State = State.Done } }
+                    Arguments = new[] { new NotifyModel { 
+                            State = State.Done,
+                            FileName = filename
+                        } 
+                    }
                 });
             }            
         }

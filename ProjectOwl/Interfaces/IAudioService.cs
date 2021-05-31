@@ -12,6 +12,6 @@ namespace ProjectOwl.Interfaces
         Task<string> AddAudioAsync(IFormFile file, Issue issue);
         Task<AudioModel> GetAudioAsync(string fileName);
         Task<PagedResult<List<AudioModel>>> GetPagedAudiosAsync(int pageNumber, int pageSize, Issue? issue = null, AuditStatus? status = null);
-        Task ProcessAudioAsync(string message);
+        Task<string> ProcessAudioAsync(string message);
     }
 }

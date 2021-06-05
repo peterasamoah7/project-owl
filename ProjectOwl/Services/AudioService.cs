@@ -75,16 +75,17 @@ namespace ProjectOwl.Services
             var blob = await _blobStorageService.GetFileAsync(Container.Audio, msg.FileName);
 
             ///extract text from audio file
-            var text = await _speechService.ExtractText(await blob.OpenReadAsync());
+            var capture = new TextCapture(); 
+            await _speechService.ContinuousRecognitionWithFileAsync(await blob.OpenReadAsync(), capture);
 
             /// get auth token
             var token = await _tokenService.GetAuthTokenAsync();
 
             /// get overall sentiment
-            var sentiment = await _textAnalyticsService.GetSentiment(text, token);
+            var sentiment = await _textAnalyticsService.GetSentiment(capture.Text, token);
             
             /// related emotional taxonomies
-            var taxonomy = await _textAnalyticsService.GetTaxonomy(text, token);
+            var taxonomy = await _textAnalyticsService.GetTaxonomy(capture.Text, token);
             string taxonomyStr = string
                 .Join(", ", taxonomy.Data.Categories
                 .Select(x => x.Label)).TrimEnd(',', ' ');      
@@ -95,7 +96,7 @@ namespace ProjectOwl.Services
 
             audio.Sentiment = sentiment.Data.Sentiment.Overall;
             audio.Taxonomy = taxonomyStr;
-            audio.Transcript = text;
+            audio.Transcript = capture.Text;
             audio.Status = AuditStatus.Done;
 
             _dbContext.Audios.Update(audio);

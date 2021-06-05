@@ -1,13 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using ProjectOwl.Models;
 using System.IO;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace ProjectOwl.Interfaces
 {
     public interface ISpeechService
     {
-        Task<string> ExtractText(Stream stream);
+        Task ContinuousRecognitionWithFileAsync(Stream stream, TextCapture textCapture);
     }
 }

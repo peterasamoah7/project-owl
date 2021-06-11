@@ -74,6 +74,9 @@ namespace ProjectOwl.Services
         private async Task<CloudBlobContainer> GetBlobContainerAsync(string containerName)
         {
             var blobClient = _storageAccount.CreateCloudBlobClient();
+            var properties = await blobClient.GetServicePropertiesAsync();
+            properties.DefaultServiceVersion = "2013-08-15";
+            await blobClient.SetServicePropertiesAsync(properties); 
             var container = blobClient.GetContainerReference(containerName);
             await container.CreateIfNotExistsAsync();
             return container; 

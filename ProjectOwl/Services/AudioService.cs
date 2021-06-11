@@ -118,7 +118,6 @@ namespace ProjectOwl.Services
             if (audio == null)
                 return null;
 
-            var sasToken = await _blobStorageService.GenerateSasToken(Container.Audio);
             var cdn = Environment.GetEnvironmentVariable("CdnEndpoint"); 
 
             return new AudioModel
@@ -126,7 +125,7 @@ namespace ProjectOwl.Services
                 FileName = audio.FileName,
                 Issue = audio.Issue,
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
-                Recording = $"{cdn}/{audio.FileName}{sasToken}",
+                Recording = $"{cdn}/{audio.FileName}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
                 Taxonomy = audio.Taxonomy?.Split(','),
@@ -158,7 +157,6 @@ namespace ProjectOwl.Services
 
             var totalRecords = await _dbContext.Audios.CountAsync();
 
-            var sasToken = await _blobStorageService.GenerateSasToken(Container.Audio);
             var cdn = Environment.GetEnvironmentVariable("CdnEndpoint");
 
             var audios = entries.Select(audio => new AudioModel 
@@ -166,7 +164,7 @@ namespace ProjectOwl.Services
                 FileName = audio.FileName,
                 Issue = audio.Issue,
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
-                Recording = $"{cdn}/{audio.FileName}{sasToken}",
+                Recording = $"{cdn}/{audio.FileName}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
                 Taxonomy = audio.Taxonomy?.Split(','),

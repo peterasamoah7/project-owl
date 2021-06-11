@@ -132,13 +132,13 @@ namespace ProjectOwl.Functions
             AuditStatus? auditStatus = null; 
             if (!string.IsNullOrEmpty(issue))
             {
-                if (!Enum.TryParse<Issue>(issue, true, out var value))
+                if (Enum.TryParse<Issue>(issue, true, out var value))
                     iss = value; 
             }    
             
             if(!string.IsNullOrEmpty(status))
             {
-                if (!Enum.TryParse<AuditStatus>(status, true, out var value)) 
+                if (Enum.TryParse<AuditStatus>(status, true, out var value)) 
                     auditStatus = value;
             }
 

@@ -125,7 +125,6 @@ namespace ProjectOwl.Services
                 FileName = audio.FileName,
                 Issue = audio.Issue,
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
-                Recording = $"{cdn}/{audio.FileName}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
                 Taxonomy = audio.Taxonomy?.Split(','),
@@ -164,7 +163,6 @@ namespace ProjectOwl.Services
                 FileName = audio.FileName,
                 Issue = audio.Issue,
                 Priority = AudioHelpers.GetPriority(audio.Sentiment),
-                Recording = $"{cdn}/{audio.FileName}",
                 Transcript = audio.Transcript,
                 Created = audio.Created.ToString("dddd, dd MMMM yyyy"),
                 Taxonomy = audio.Taxonomy?.Split(','),
@@ -174,6 +172,21 @@ namespace ProjectOwl.Services
 
             return new PagedResult<List<AudioModel>>
                     (audios, filter.PageNumber, filter.PageSize, totalRecords);
+        }
+
+        /// <summary>
+        /// Return an audio stream
+        /// </summary>
+        /// <param name="fileName"></param>
+        /// <returns></returns>
+        public async Task<Stream> PlayAudio(string fileName)
+        {
+            var audio = await _blobStorageService.GetFileAsync(Container.Audio, fileName);
+
+            if (audio == null)
+                return null; 
+
+            return await audio.OpenReadAsync(); 
         }
     }
 }

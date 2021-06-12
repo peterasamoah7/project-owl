@@ -149,6 +149,22 @@ namespace ProjectOwl.Functions
         }
 
         /// <summary>
+        /// Return url for streaming audio file
+        /// </summary>
+        /// <param name="req"></param>
+        /// <param name="file"></param>
+        /// <returns></returns>
+        [FunctionName("AudioPlayFunction")]
+        public async Task<IActionResult> PlayAudio(
+            [HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "audio/play/{file}")] HttpRequest req, string file)
+        {
+            if (string.IsNullOrEmpty(file) || string.IsNullOrWhiteSpace(file))
+                return new BadRequestResult();
+
+            return new OkObjectResult(await _audioService.PlayAudio(file)); 
+        }
+
+        /// <summary>
         /// Add health check endpoint
         /// </summary>
         /// <param name="req"></param>

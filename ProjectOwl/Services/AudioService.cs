@@ -38,26 +38,13 @@ namespace ProjectOwl.Services
         /// Add an audio for auditing
         /// </summary>
         /// <param name="file"></param>
-        /// <param name="issue"></param>
         /// <returns></returns>
-        public async Task<string> AddAudioAsync(IFormFile file, Issue issue)
+        public async Task<string> AddAudioAsync(IFormFile file)
         {
             var ext = Path.GetExtension(file.FileName); 
             var fileName = $"{Guid.NewGuid()}{ext}";
 
             await _blobStorageService.UploadFileAsync(Container.Audio, file, fileName);
-
-            var audio = new Audio
-            {
-                FileName = fileName,
-                FileExtension = ext,
-                Issue = issue,
-                Created = DateTime.Now,
-                Status = AuditStatus.Pending
-            };
-
-            await _dbContext.Audios.AddAsync(audio);
-            await _dbContext.SaveChangesAsync();
 
             return fileName;
         }
@@ -90,16 +77,20 @@ namespace ProjectOwl.Services
                 .Join(", ", taxonomy.Data.Categories
                 .Select(x => x.Label)).TrimEnd(',', ' ');      
 
-            ///update audio entry with details from above
-            var audio = await _dbContext.Audios
-                .FirstOrDefaultAsync(a => a.FileName == msg.FileName);
+            ///create audio entry with details from above
+            var audio = new Audio
+            {
+                FileName = msg.FileName,
+                FileExtension = Path.GetExtension(msg.FileName),
+                Issue = msg.Issue,
+                Created = DateTime.Now,
+                Sentiment = sentiment.Data.Sentiment.Overall,
+                Taxonomy = taxonomyStr,
+                Status = AuditStatus.Done,
+                Transcript = capture.Text
+            };
 
-            audio.Sentiment = sentiment.Data.Sentiment.Overall;
-            audio.Taxonomy = taxonomyStr;
-            audio.Transcript = capture.Text;
-            audio.Status = AuditStatus.Done;
-
-            _dbContext.Audios.Update(audio);
+            await _dbContext.Audios.AddAsync(audio);
             await _dbContext.SaveChangesAsync();
 
             return audio.FileName; 

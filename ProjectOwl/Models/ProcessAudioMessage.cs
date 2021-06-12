@@ -10,5 +10,10 @@ namespace ProjectOwl.Models
         /// Audio file name
         /// </summary>
         public string FileName { get; set; }
+
+        /// <summary>
+        /// Audio Issue
+        /// </summary>
+        public Issue Issue { get; set; }
     }
 }

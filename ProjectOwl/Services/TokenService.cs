@@ -34,7 +34,7 @@ namespace ProjectOwl.Services
         {
             try
             {
-                ///check if cached token is expired; 
+                ///check if cached token is expired, return if not 
                 if(_cache.TryGetValue<string>(tokenKey, out var value))
                 {
                     var jwtToken = new JwtSecurityToken(value);

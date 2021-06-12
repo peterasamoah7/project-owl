@@ -42,11 +42,12 @@ namespace ProjectOwl.Functions
             if(!Enum.TryParse<Issue>(form["issue"].ToString(), true, out var issue))
                 return new BadRequestResult();
 
-            var filename = await _audioService.AddAudioAsync(form.Files[0], issue);
+            var filename = await _audioService.AddAudioAsync(form.Files[0]);
 
             outputQueueItem.Add(JsonConvert.SerializeObject(new ProcessAudioMessage 
             {
-                FileName = filename
+                FileName = filename,
+                Issue = issue
             }));
 
             return new OkResult(); 

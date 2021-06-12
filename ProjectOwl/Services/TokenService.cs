@@ -1,7 +1,9 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json;
 using ProjectOwl.Interfaces;
 using ProjectOwl.Models;
 using System;
+using System.IdentityModel.Tokens.Jwt;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -12,11 +14,14 @@ namespace ProjectOwl.Services
     public class TokenService : ITokenService
     {
         private readonly HttpClient _httpClient;
+        private readonly IMemoryCache _cache;
+        private readonly string tokenKey = "auth-token"; 
 
-        public TokenService(HttpClient httpClient)
+        public TokenService(HttpClient httpClient, IMemoryCache cache)
         {
             httpClient.BaseAddress = new Uri(Environment.GetEnvironmentVariable("AuthUrl"));
             _httpClient = httpClient;
+            _cache = cache; 
         }
 
         /// <summary>
@@ -29,6 +34,15 @@ namespace ProjectOwl.Services
         {
             try
             {
+                ///check if cached token is expired; 
+                if(_cache.TryGetValue<string>(tokenKey, out var value))
+                {
+                    var jwtToken = new JwtSecurityToken(value);
+                    if (jwtToken.ValidTo > DateTime.UtcNow)
+                        return new AuthenticationHeaderValue("Bearer", value);
+                }
+
+                ///create a new token if cached is expired or missing
                 var request = new TokenRequest
                 {
                     Username = Environment.GetEnvironmentVariable("AccountId"),
@@ -42,8 +56,12 @@ namespace ProjectOwl.Services
                     .PostAsync("oauth2/token", content);
                 response.EnsureSuccessStatusCode();
 
-                return new AuthenticationHeaderValue("Bearer",
-                    await response.Content.ReadAsStringAsync());
+                var token = await response.Content.ReadAsStringAsync();
+
+                ///cache new token to be reused in next request
+                _cache.Set(tokenKey, token); 
+
+                return new AuthenticationHeaderValue("Bearer", token);
             }
             catch(Exception ex)
             {

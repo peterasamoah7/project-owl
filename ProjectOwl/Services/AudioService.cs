@@ -118,8 +118,6 @@ namespace ProjectOwl.Services
             if (audio == null)
                 return null;
 
-            var cdn = Environment.GetEnvironmentVariable("CdnEndpoint"); 
-
             return new AudioModel
             {
                 FileName = audio.FileName,
@@ -155,8 +153,6 @@ namespace ProjectOwl.Services
                 entries = entries.Where(x => x.Status == status.Value).ToList();
 
             var totalRecords = await _dbContext.Audios.CountAsync();
-
-            var cdn = Environment.GetEnvironmentVariable("CdnEndpoint");
 
             var audios = entries.Select(audio => new AudioModel 
             {

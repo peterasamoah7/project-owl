@@ -18,11 +18,6 @@
         public Priority Priority { get; set; }
 
         /// <summary>
-        /// Audio recording via cdn
-        /// </summary>
-        public string Recording { get; set; }
-
-        /// <summary>
         /// Audio transcript
         /// </summary>
         public string Transcript { get; set; }

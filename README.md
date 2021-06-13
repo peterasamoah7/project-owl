@@ -47,7 +47,9 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-TBD 
+Project Owl is a proof of concept AI powered application that aims to demonstrate how the Expert AI Natural Language API can be used for auditing and gaining insight from customers by analyzing audio recorded calls at call centers. Project Owl employs the Sentiment Analysis and Taxonomy features of the NLP API to analyse and prioritize customer service complaints and also provides insight on the customer emotional state respectively. 
+
+The inspiration for this project is to experiment how a call center issue management system can be automated for customer serving financial institutions such as banks and fin-tech companies. 
 
 You can view the demo [here](TBD)
 
@@ -81,7 +83,7 @@ To run the application locally, please follow the steps below.
 3. Create a free Azure Account at [Azure](https://azure.microsoft.com/) or use an existing one. 
 4. Create an Speech Service resource in Azure portal.
 5. Create a SignalR Service in Azure portal.
-6. Create a SQL Database in Azure portal(or use local in memory database see below).
+6. Create a SQL Database in Azure portal and run sql script(or to use local in memory database see below).
 7. Create a Storage Account V2 in Azure portal(or use local Azure storage using Azure Storage Emulator) 
 8. Update `appsettings.json`
   ```sh
@@ -110,20 +112,10 @@ To run the application locally, please follow the steps below.
 
 ### Running from Visual Studio
 
-1. Install front end dependencies 
-```sh
-npm install
-```
-
-2. From Visual Studio, press `F5`
+1. From Visual Studio, press `F5`
  
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Please refer to the [demo](https://youtu.be/k9EI3Qo8fvU)
-
-<!-- LICENSE -->
-## License
-
-Distributed under the MIT License. See `LICENSE` for more information.
+Please refer to the [demo](TBD)
 

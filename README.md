@@ -51,9 +51,9 @@ Project Owl is a proof of concept AI powered application that aims to demonstrat
 
 The inspiration for this project is to experiment how a call center issue management system can be automated for customer serving financial institutions such as banks and fin-tech companies. 
 
-You can view the demo [here](TBD)
+You can view the demo [here](https://www.youtube.com/watch?v=JupjiemdmrQ)
 
-You can try the live application here [Live site](TBD)
+You can try the live application here [Live site](https://stupefied-hamilton-53906e.netlify.app/)
 
 ### Built With
 * [Azure Functions](https://azure.microsoft.com/services/functions/)
@@ -117,5 +117,5 @@ To run the application locally, please follow the steps below.
 <!-- USAGE EXAMPLES -->
 ## Usage
 
-Please refer to the [demo](TBD)
+Please refer to the [demo](https://stupefied-hamilton-53906e.netlify.app/)
 
